@@ -46,19 +46,10 @@
         }
 
         /* Sleek Custom Scrollbar for PC */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #050505;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
 
         .app-bg {
             position: fixed;
@@ -191,7 +182,6 @@
             scroll-behavior: smooth;
         }
 
-        /* WRAPPER to stop weird stretching on Ultra-Wide PC monitors */
         .content-wrapper {
             max-width: 1400px;
             width: 100%;
@@ -203,7 +193,7 @@
         /* Hero Image Banner - PC Optimized */
         .hero-banner {
             width: 100%;
-            min-height: 260px; /* Taller on PC */
+            min-height: 260px; 
             border-radius: 24px;
             margin-bottom: 3rem;
             background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
@@ -214,14 +204,14 @@
             border: 1px solid var(--card-border);
             box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             display: flex;
-            align-items: center; /* Centered nicely on Desktop */
+            align-items: center; 
             padding: 3rem;
         }
         .hero-banner::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to right, rgba(5,5,7,0.95) 0%, rgba(5,5,7,0.1) 100%); /* Left fade on PC */
+            background: linear-gradient(to right, rgba(5,5,7,0.95) 0%, rgba(5,5,7,0.1) 100%); 
         }
         .hero-content {
             position: relative;
@@ -285,7 +275,6 @@
             margin-bottom: 4rem;
         }
 
-        /* PACKS SECTION PC FIX - Expands the 3 packs to perfectly fill the space */
         .packs-grid {
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         }
@@ -352,7 +341,7 @@
             letter-spacing: 0.5px;
         }
 
-        .card:hover, .card:active {
+        .card:hover {
             transform: translateY(-6px);
             background-color: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.15);
@@ -383,7 +372,7 @@
             text-transform: uppercase;
         }
 
-        /* --- Mobile App UI --- */
+        /* --- Mobile App UI (Android Optimized) --- */
         .mobile-top-bar, .mobile-bottom-nav, .sidebar-overlay { display: none; }
 
         @media (max-width: 900px) {
@@ -391,10 +380,11 @@
 
             .sidebar { 
                 transform: translateX(-100%); 
-                background: rgba(10, 10, 12, 0.9); 
+                background: rgba(10, 10, 12, 0.92); 
                 width: 270px;
+                padding-bottom: calc(1rem + env(safe-area-inset-bottom));
             }
-            .sidebar.open { transform: translateX(0); }
+            .sidebar.open { transform: translateX(0); box-shadow: 5px 0 25px rgba(0,0,0,0.5); }
 
             .sidebar-overlay {
                 display: block;
@@ -413,30 +403,38 @@
             
             .main-content { 
                 margin-left: 0; 
-                padding: 6rem 1rem 7rem 1rem; 
+                padding: 5.5rem 1rem 6rem 1rem; 
             }
             
-            /* Mobile tweaks for header */
+            /* ANDROID OPTIMIZED: Smaller, compact Hero Banner */
             .hero-banner { 
-                min-height: 200px; 
-                padding: 1.25rem; 
-                border-radius: 20px; 
-                align-items: flex-end; /* Text at bottom for mobile */
+                min-height: 140px; /* Reduced heavily for mobile */
+                padding: 1.25rem 1rem; 
+                border-radius: 18px; 
+                margin-bottom: 1rem;
+                align-items: flex-end; 
             }
             .hero-banner::before {
-                background: linear-gradient(to top, rgba(5,5,7,0.95) 0%, rgba(5,5,7,0.1) 100%); /* Bottom fade on Mobile */
+                background: linear-gradient(to top, rgba(5,5,7,0.95) 0%, rgba(5,5,7,0.2) 100%); 
             }
-            .header { margin-bottom: 1.5rem; }
-            .header h1 { font-size: 2.2rem; }
-            .section-heading { font-size: 1.3rem; margin-top: 2rem; }
+            .status-badge {
+                font-size: 0.6rem;
+                padding: 0.2rem 0.6rem;
+                margin-bottom: 0.4rem;
+            }
+            .header { margin-bottom: 0; }
+            .header h1 { font-size: 1.8rem; margin-bottom: 0.2rem; } /* Smaller text */
+            .header p { font-size: 0.85rem; line-height: 1.4; } /* Tighter paragraph */
+            
+            .section-heading { font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 1rem; scroll-margin-top: 80px; }
             
             /* Native Top Bar */
             .mobile-top-bar {
                 display: flex;
                 position: fixed;
                 top: 0; left: 0; right: 0;
-                height: 65px;
-                background: rgba(10, 10, 12, 0.7);
+                height: 60px;
+                background: rgba(10, 10, 12, 0.8);
                 backdrop-filter: blur(30px);
                 -webkit-backdrop-filter: blur(30px);
                 border-bottom: 1px solid var(--card-border);
@@ -450,13 +448,19 @@
                 display: flex; align-items: center; justify-content: center;
                 padding: 0.5rem; cursor: pointer; margin-left: -0.5rem;
             }
-            .menu-btn svg { width: 28px; height: 28px; fill: var(--text-primary); }
+            .menu-btn svg { width: 26px; height: 26px; fill: var(--text-primary); }
             
             .user-avatar {
-                width: 32px; height: 32px;
+                width: 30px; height: 30px;
                 border-radius: 50%;
                 background: linear-gradient(135deg, #8b5cf6, #ec4899);
                 border: 2px solid rgba(255,255,255,0.2);
+            }
+
+            /* Android Active/Ripple Feel for Cards */
+            .card:active {
+                transform: scale(0.97);
+                background-color: rgba(255, 255, 255, 0.08);
             }
 
             /* Horizontal scroll for Packs on Mobile */
@@ -465,7 +469,7 @@
                 overflow-x: auto;
                 scroll-snap-type: x mandatory;
                 gap: 1rem;
-                padding-bottom: 1.5rem;
+                padding-bottom: 1rem;
                 margin-right: -1rem; 
                 padding-right: 1rem;
                 scrollbar-width: none;
@@ -473,20 +477,20 @@
             .packs-grid::-webkit-scrollbar { display: none; }
             
             .packs-grid .card {
-                min-width: 260px;
+                min-width: 250px;
                 scroll-snap-align: center;
                 flex-shrink: 0;
             }
 
-            .card-grid:not(.packs-grid) { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; }
+            .card-grid:not(.packs-grid) { grid-template-columns: 1fr; gap: 0.85rem; margin-bottom: 1.5rem; }
 
             /* Native Bottom Nav */
             .mobile-bottom-nav {
                 display: flex;
                 position: fixed;
                 bottom: 0; left: 0; right: 0;
-                height: calc(70px + env(safe-area-inset-bottom));
-                background: rgba(10, 10, 12, 0.85);
+                height: calc(65px + env(safe-area-inset-bottom));
+                background: rgba(10, 10, 12, 0.9);
                 backdrop-filter: blur(30px);
                 -webkit-backdrop-filter: blur(30px);
                 border-top: 1px solid var(--card-border);
@@ -497,14 +501,24 @@
             }
 
             .nav-item {
-                display: flex; flex-direction: column; align-items: center;
-                gap: 5px; color: var(--text-secondary); text-decoration: none;
-                font-size: 0.7rem; font-weight: 600; cursor: pointer;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                gap: 3px; color: var(--text-secondary); text-decoration: none;
+                font-size: 0.65rem; font-weight: 600; cursor: pointer;
+                width: 100%; height: 100%;
+                -webkit-tap-highlight-color: transparent;
             }
-            .nav-item .icon { font-size: 1.4rem; }
-            .nav-item:active { transform: scale(0.92); color: var(--text-primary); }
+            .nav-item .icon { font-size: 1.3rem; transition: transform 0.2s ease;}
             
-            .footer-watermark { padding-bottom: 5rem; margin-top: 2rem; }
+            /* Android Navigation Highlight Effect */
+            .nav-item:active { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+            .nav-item:active .icon { transform: scale(0.9); }
+            
+            /* Ensure Watermark is visible above the mobile nav bar */
+            .footer-watermark { 
+                padding-bottom: calc(75px + env(safe-area-inset-bottom)); 
+                margin-top: 1rem; 
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -573,10 +587,10 @@
                 
                 <div class="hero-banner">
                     <div class="hero-content">
-                        <span class="status-badge">⚡ Updated Asset Hub</span>
+                        <span class="status-badge">⚡ Updated Hub</span>
                         <div class="header" style="margin-bottom:0;">
                             <h1>Creator Library</h1>
-                            <p>Curated overlays, premium effects, and cinematic transitions to elevate your projects.</p>
+                            <p>Premium overlays, effects, and assets for your workflow.</p>
                         </div>
                     </div>
                 </div>
