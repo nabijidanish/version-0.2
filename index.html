@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050505">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    
     <title>Creator's Hub | Asset Library</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -21,10 +27,11 @@
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
+            /* Prevents tap highlighting on Android for native feel */
+            -webkit-tap-highlight-color: transparent; 
         }
 
         body {
-            /* Cinematic dark overlay + Your image */
             background-image: 
                 linear-gradient(to bottom right, rgba(5, 5, 7, 0.8), rgba(15, 15, 20, 0.95)),
                 url('https://downloadscdn6.freepik.com/23/2149370/2149369692.jpg?filename=dystopian-landscape-with-futuristic-city-people.jpg&token=exp=1773751707~hmac=c9a5a2dc1bac1848d0d4455c976bbffa&filename=2149369692.jpg');
@@ -37,16 +44,17 @@
             min-height: 100vh;
             display: flex;
             overflow-x: hidden;
+            overscroll-behavior-y: none; /* Prevents pull-to-refresh app bouncing */
         }
 
-        /* Layout */
+        /* Desktop Layout */
         .app-container {
             display: flex;
             width: 100%;
             height: 100vh;
         }
 
-        /* Sidebar Navigation */
+        /* Desktop Sidebar Navigation */
         .sidebar {
             width: 280px;
             height: 100vh;
@@ -94,12 +102,10 @@
             gap: 0.25rem;
             overflow-y: auto;
             padding-bottom: 2rem;
+            scrollbar-width: none; 
         }
 
-        /* Clean hidden scrollbar for sidebar */
-        .tools-list::-webkit-scrollbar { width: 4px; } 
-        .tools-list::-webkit-scrollbar-track { background: transparent; }
-        .tools-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        .tools-list::-webkit-scrollbar { display: none; }
 
         .nav-section {
             font-size: 0.7rem;
@@ -138,6 +144,7 @@
             padding: 4rem;
             flex: 1;
             overflow-y: auto;
+            scroll-behavior: smooth;
         }
 
         .header {
@@ -170,18 +177,19 @@
             align-items: center;
             gap: 0.5rem;
             letter-spacing: -0.3px;
+            scroll-margin-top: 80px; /* Offset for mobile scrolling */
         }
 
         /* Premium Glass Cards */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
             margin-bottom: 3rem;
         }
 
         .card {
-            padding: 1.75rem;
+            padding: 1.5rem;
             border-radius: 16px;
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -190,15 +198,14 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-top: 1px solid rgba(255, 255, 255, 0.12);
             border-left: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+            user-select: none; 
         }
 
         .card-icon {
@@ -214,7 +221,7 @@
             font-size: 14px;
         }
 
-        .card:hover {
+        .card:hover, .card:active {
             transform: translateY(-4px) scale(1.01);
             background: var(--card-hover);
             border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -222,10 +229,9 @@
         }
 
         .card h3 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 500;
             color: var(--text-primary);
-            letter-spacing: -0.3px;
         }
 
         .card p {
@@ -234,38 +240,133 @@
             line-height: 1.5;
         }
 
-        /* Responsive Design */
+        /* =========================================================
+           MOBILE APP UI (Hidden on Desktop) 
+           ========================================================= */
+        .mobile-top-bar, .mobile-bottom-nav, .sheet-overlay, .bottom-sheet {
+            display: none;
+        }
+
         @media (max-width: 900px) {
+            .sidebar { display: none; /* Hide Desktop Sidebar */ }
+            
             .app-container { flex-direction: column; }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: sticky;
-                flex-direction: column;
-                padding: 1.5rem;
-                gap: 1rem;
-                border-right: none;
+            
+            .main-content { 
+                margin-left: 0; 
+                /* Space for top app bar and bottom nav */
+                padding: 5rem 1rem 6rem 1rem; 
+            }
+            
+            .header h1 { font-size: 2rem; }
+            
+            /* Native-style Top Bar */
+            .mobile-top-bar {
+                display: flex;
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                height: 60px;
+                background: rgba(10, 10, 12, 0.7);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
                 border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                z-index: 40;
+                align-items: center;
+                justify-content: center;
+                padding-top: env(safe-area-inset-top);
             }
-            .tools-list {
-                flex-direction: row;
-                overflow-x: auto;
-                padding-bottom: 0.5rem;
-                align-items: flex-start;
+
+            /* Native-style Bottom Nav Bar */
+            .mobile-bottom-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                height: calc(65px + env(safe-area-inset-bottom));
+                background: rgba(10, 10, 12, 0.85);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                z-index: 40;
+                justify-content: space-around;
+                align-items: center;
+                padding-bottom: env(safe-area-inset-bottom);
             }
-            .nav-section {
-                margin: 0;
-                padding: 0 0.5rem 0 1rem;
-                white-space: nowrap;
-                align-self: center;
+
+            .nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                color: var(--text-secondary);
+                text-decoration: none;
+                font-size: 0.65rem;
+                font-weight: 500;
+                cursor: pointer;
             }
-            .tool a { white-space: nowrap; padding: 0.5rem 0.75rem; }
-            .main-content { margin-left: 0; padding: 2rem 1.5rem; }
-            .card-grid { grid-template-columns: 1fr; }
+            
+            .nav-item .icon { font-size: 1.3rem; margin-bottom: 2px;}
+            .nav-item:active { transform: scale(0.95); }
+
+            /* Bottom Sheet (Drawer) Overlay */
+            .sheet-overlay {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.6);
+                z-index: 50;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            /* Bottom Sheet (Drawer) Menu */
+            .bottom-sheet {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                bottom: -100%; /* Hidden off-screen initially */
+                left: 0; right: 0;
+                max-height: 85vh;
+                background: rgba(15, 15, 18, 0.95);
+                backdrop-filter: blur(30px);
+                -webkit-backdrop-filter: blur(30px);
+                border-top-left-radius: 24px;
+                border-top-right-radius: 24px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                z-index: 55;
+                transition: bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+                padding: 1rem 1.5rem calc(2rem + env(safe-area-inset-bottom)) 1.5rem;
+            }
+
+            /* The little drag handle at top of sheet */
+            .sheet-handle {
+                width: 40px;
+                height: 5px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                margin: 0 auto 1.5rem auto;
+            }
+
+            /* Open states triggered by JS */
+            .sheet-overlay.open { display: block; opacity: 1; }
+            .bottom-sheet.open { bottom: 0; }
+
+            .sheet-content {
+                overflow-y: auto;
+                overscroll-behavior-y: contain; /* Traps scroll inside sheet */
+                padding-bottom: 1rem;
+            }
+            .sheet-content::-webkit-scrollbar { display: none; }
         }
     </style>
 </head>
-<body>
+<body id="home">
+
+    <div class="mobile-top-bar">
+        <div class="brand">
+            <div class="brand-icon">✨</div>
+            Studio Desk
+        </div>
+    </div>
 
     <div class="app-container">
         <nav class="sidebar">
@@ -273,13 +374,12 @@
                 <div class="brand-icon">✨</div>
                 Studio Desk
             </div>
-            <div class="tools-list">
-                
+            <div class="tools-list" id="desktop-links">
                 <div class="nav-section">Video & Audio</div>
                 <div class="tool"><a href="https://animeclips.online/" target="_blank">🎬 Anime Clips</a></div>
                 <div class="tool"><a href="https://uhdmovies.ink/" target="_blank">🎥 4K Movies</a></div>
-                <div class="tool"><a href="https://mixkit.co" target="_blank">🎞 Mixkit (Stock Video)</a></div>
-                <div class="tool"><a href="https://freesound.org/" target="_blank">🎵 Freesound (SFX)</a></div>
+                <div class="tool"><a href="https://mixkit.co" target="_blank">🎞 Mixkit</a></div>
+                <div class="tool"><a href="https://freesound.org/" target="_blank">🎵 Freesound</a></div>
 
                 <div class="nav-section">Games</div>
                 <div class="tool"><a href="https://ankergames.net/" target="_blank">🕹️ AnkerGames</a></div>
@@ -298,10 +398,9 @@
                 <div class="tool"><a href="https://colorhunt.co/" target="_blank">🎨 Color Hunt</a></div>
 
                 <div class="nav-section">Design Utilities</div>
-                <div class="tool"><a href="https://www.photopea.com/" target="_blank">🖌 Photopea (Free PS)</a></div>
+                <div class="tool"><a href="https://www.photopea.com/" target="_blank">🖌 Photopea</a></div>
                 <div class="tool"><a href="https://share.google/5X5QVe6MblQ88pWtR" target="_blank">✂️ RemoveBG</a></div>
                 <div class="tool"><a href="https://www.downloadpirate.com/page/18/" target="_blank">🧩 Crack Plugins</a></div>
-
             </div>
         </nav>
 
@@ -311,96 +410,125 @@
                 <p>Curated overlays, premium effects, and cinematic transitions to elevate your next video project.</p>
             </div>
 
-            <h2 class="section-heading">✨ Plugins & Overlays</h2>
+            <h2 class="section-heading" id="assets-section">✨ Plugins & Overlays</h2>
             <div class="card-grid">
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1zKy6Hpvb6AWlCQVPlJFwxNisoLg5UT9E')">
                     <div class="card-icon">🧩</div>
-                    <h3>All Plugins</h3> 
-                    <p>A complete collection of editing plugins</p>
+                    <h3>All Plugins</h3> <p>A complete collection of editing plugins</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1KtpF-Qd1Rz37W4GVmJn9V-VhlgI3k6DE?usp=drive_link')">
                     <div class="card-icon">🌲</div>
-                    <h3>Environmental</h3> 
-                    <p>Nature effects and atmosphere assets</p>
+                    <h3>Environmental</h3> <p>Nature effects and atmosphere assets</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1_7CWm2886CbsSXOC4M98XZjtuDdtm9Aq?usp=drive_link')">
                     <div class="card-icon">✨</div>
-                    <h3>Extra Light Leaks</h3>
-                    <p>Cinematic light leak overlays</p>
+                    <h3>Extra Light Leaks</h3> <p>Cinematic light leak overlays</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1CkO5bJBxahiiZr0yXZG0fthPigrYz_A_?usp=drive_link')">
                     <div class="card-icon">🎞️</div>
-                    <h3>Film Transitions</h3>
-                    <p>Retro and modern film transitions</p>
+                    <h3>Film Transitions</h3> <p>Retro and modern film transitions</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1thX3uIo-Li3ZyD3ne8pSoVPunL4WRjwx?usp=drive_link')">
                     <div class="card-icon">🖼️</div>
-                    <h3>PNG Overlays</h3>
-                    <p>Transparent editing assets and graphics</p>
+                    <h3>PNG Overlays</h3> <p>Transparent editing assets and graphics</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1fGhMGXIS-uW12mQLbokYU0STLn24f8fa?usp=drive_link')">
                     <div class="card-icon">⚡</div>
-                    <h3>Speed Light</h3>
-                    <p>Fast motion light effects and streaks</p>
+                    <h3>Speed Light</h3> <p>Fast motion light effects and streaks</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F5LOS6r94UjpMM4SxMREkNQmuYgDxub8?usp=drive_link')">
                     <div class="card-icon">🔄</div>
-                    <h3>Smooth Transitions</h3>
-                    <p>Seamless cinematic cut transitions</p>
+                    <h3>Smooth Transitions</h3> <p>Seamless cinematic cut transitions</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F2hTcqGDJkRpyCWpMzCxjasfIdP_FQkC?usp=drive_link')">
                     <div class="card-icon">🎯</div>
-                    <h3>Unique Effects</h3>
-                    <p>Creative and rare editing effects</p>
+                    <h3>Unique Effects</h3> <p>Creative and rare editing effects</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F6p3GR16SR8ohC38V4HG9-ksVTyKZotS?usp=drive_link')">
                     <div class="card-icon">📼</div>
-                    <h3>VHS & Retro</h3>
-                    <p>Analog distortions and glitch effects</p>
+                    <h3>VHS & Retro</h3> <p>Analog distortions and glitch effects</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1FhZOI0vOjSLWAGZiJWfXGs_lBkLpjJbr?usp=drive_link')">
                     <div class="card-icon">🔮</div>
-                    <h3>Vibe Overlays</h3>
-                    <p>Aesthetic mood and visual enhancements</p>
+                    <h3>Vibe Overlays</h3> <p>Aesthetic mood and visual enhancements</p>
                 </div>
             </div>
 
-            <h2 class="section-heading">📦 Editing Packs</h2>
+            <h2 class="section-heading" id="packs-section">📦 Editing Packs</h2>
             <div class="card-grid">
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1Biw6AhJUEer3kZ14E2X6eNseMEqxFytj')">
                     <div class="card-icon">🎒</div>
-                    <h3>9headache Pack</h3> 
-                    <p>Comprehensive editing resources and bundle</p>
+                    <h3>9headache Pack</h3> <p>Comprehensive editing resources and bundle</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/file/d/1H8KvMP9ajewl-x_kKxQ2e2W97QjRmNMr/view?usp=drive_link')">
                     <div class="card-icon">🪐</div>
-                    <h3>Neptun's Pack 1-6</h3>
-                    <p>Complete collection of Neptun's assets</p>
+                    <h3>Neptun's Pack 1-6</h3> <p>Complete collection of Neptun's assets</p>
                 </div>
-
                 <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1byxKUF18N3Uk_N9pCxiliK0tJ5qU_W36?usp=drive_link')">
                     <div class="card-icon">🎓</div>
-                    <h3>Toziek Pack</h3>
-                    <p>Premium editing pack including tutorials</p>
+                    <h3>Toziek Pack</h3> <p>Premium editing pack including tutorials</p>
                 </div>
             </div>
-
         </main>
+    </div>
+
+    <div class="mobile-bottom-nav">
+        <a href="#home" class="nav-item">
+            <span class="icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="#assets-section" class="nav-item">
+            <span class="icon">📂</span>
+            <span>Assets</span>
+        </a>
+        <a href="#packs-section" class="nav-item">
+            <span class="icon">📦</span>
+            <span>Packs</span>
+        </a>
+        <div class="nav-item" onclick="toggleMenu()">
+            <span class="icon">🔗</span>
+            <span>Links</span>
+        </div>
+    </div>
+
+    <div class="sheet-overlay" onclick="toggleMenu()"></div>
+    <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-content tools-list" id="mobile-links">
+            </div>
     </div>
 
     <script>
         function openLink(url) {
             window.open(url, '_blank');
+        }
+
+        // Toggle the Mobile Bottom Sheet Menu
+        function toggleMenu() {
+            const overlay = document.querySelector('.sheet-overlay');
+            const sheet = document.querySelector('.bottom-sheet');
+            
+            overlay.classList.toggle('open');
+            sheet.classList.toggle('open');
+        }
+
+        // Clone desktop sidebar links into mobile bottom sheet to prevent repeating HTML
+        document.addEventListener("DOMContentLoaded", () => {
+            const desktopLinks = document.getElementById('desktop-links').innerHTML;
+            document.getElementById('mobile-links').innerHTML = desktopLinks;
+        });
+
+        // Register Service Worker for PWA (Installable App)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered successfully.');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
         }
     </script>
 </body>
