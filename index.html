@@ -27,7 +27,6 @@
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
-            /* Prevents tap highlighting on Android for native feel */
             -webkit-tap-highlight-color: transparent; 
         }
 
@@ -44,10 +43,10 @@
             min-height: 100vh;
             display: flex;
             overflow-x: hidden;
-            overscroll-behavior-y: none; /* Prevents pull-to-refresh app bouncing */
+            overscroll-behavior-y: none; 
         }
 
-        /* Desktop Layout */
+        /* Layout */
         .app-container {
             display: flex;
             width: 100%;
@@ -69,7 +68,8 @@
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-right: 1px solid rgba(255, 255, 255, 0.05);
-            z-index: 10;
+            z-index: 50; /* High z-index for mobile overlay */
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .brand {
@@ -177,7 +177,7 @@
             align-items: center;
             gap: 0.5rem;
             letter-spacing: -0.3px;
-            scroll-margin-top: 80px; /* Offset for mobile scrolling */
+            scroll-margin-top: 80px; 
         }
 
         /* Premium Glass Cards */
@@ -243,18 +243,44 @@
         /* =========================================================
            MOBILE APP UI (Hidden on Desktop) 
            ========================================================= */
-        .mobile-top-bar, .mobile-bottom-nav, .sheet-overlay, .bottom-sheet {
+        .mobile-top-bar, .mobile-bottom-nav, .sidebar-overlay {
             display: none;
         }
 
         @media (max-width: 900px) {
-            .sidebar { display: none; /* Hide Desktop Sidebar */ }
+            
+            /* Hide sidebar off-screen by default on mobile */
+            .sidebar { 
+                transform: translateX(-100%); 
+                background: rgba(15, 15, 18, 0.95); /* Solidify slightly on mobile */
+            }
+
+            /* Class to open sidebar */
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* Dark background overlay when sidebar is open */
+            .sidebar-overlay {
+                display: block;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.6);
+                z-index: 45; /* Just behind the sidebar (50) */
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+
+            .sidebar-overlay.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
             
             .app-container { flex-direction: column; }
             
             .main-content { 
                 margin-left: 0; 
-                /* Space for top app bar and bottom nav */
                 padding: 5rem 1rem 6rem 1rem; 
             }
             
@@ -274,6 +300,23 @@
                 align-items: center;
                 justify-content: center;
                 padding-top: env(safe-area-inset-top);
+            }
+
+            /* Extend Button (Hamburger Menu) */
+            .menu-btn {
+                position: absolute;
+                left: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.5rem;
+                cursor: pointer;
+            }
+
+            .menu-btn svg {
+                width: 24px;
+                height: 24px;
+                fill: var(--text-primary);
             }
 
             /* Native-style Bottom Nav Bar */
@@ -306,75 +349,34 @@
             
             .nav-item .icon { font-size: 1.3rem; margin-bottom: 2px;}
             .nav-item:active { transform: scale(0.95); }
-
-            /* Bottom Sheet (Drawer) Overlay */
-            .sheet-overlay {
-                display: none;
-                position: fixed;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.6);
-                z-index: 50;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-
-            /* Bottom Sheet (Drawer) Menu */
-            .bottom-sheet {
-                display: flex;
-                flex-direction: column;
-                position: fixed;
-                bottom: -100%; /* Hidden off-screen initially */
-                left: 0; right: 0;
-                max-height: 85vh;
-                background: rgba(15, 15, 18, 0.95);
-                backdrop-filter: blur(30px);
-                -webkit-backdrop-filter: blur(30px);
-                border-top-left-radius: 24px;
-                border-top-right-radius: 24px;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-                z-index: 55;
-                transition: bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-                padding: 1rem 1.5rem calc(2rem + env(safe-area-inset-bottom)) 1.5rem;
-            }
-
-            /* The little drag handle at top of sheet */
-            .sheet-handle {
-                width: 40px;
-                height: 5px;
-                background: rgba(255, 255, 255, 0.2);
-                border-radius: 10px;
-                margin: 0 auto 1.5rem auto;
-            }
-
-            /* Open states triggered by JS */
-            .sheet-overlay.open { display: block; opacity: 1; }
-            .bottom-sheet.open { bottom: 0; }
-
-            .sheet-content {
-                overflow-y: auto;
-                overscroll-behavior-y: contain; /* Traps scroll inside sheet */
-                padding-bottom: 1rem;
-            }
-            .sheet-content::-webkit-scrollbar { display: none; }
+            .card-grid { grid-template-columns: 1fr; gap: 1rem; }
         }
     </style>
 </head>
 <body id="home">
 
     <div class="mobile-top-bar">
+        <div class="menu-btn" onclick="toggleSidebar()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+        </div>
         <div class="brand">
             <div class="brand-icon">✨</div>
             Studio Desk
         </div>
     </div>
 
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
     <div class="app-container">
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="brand">
                 <div class="brand-icon">✨</div>
                 Studio Desk
             </div>
-            <div class="tools-list" id="desktop-links">
+            
+            <div class="tools-list">
                 <div class="nav-section">Video & Audio</div>
                 <div class="tool"><a href="https://animeclips.online/" target="_blank">🎬 Anime Clips</a></div>
                 <div class="tool"><a href="https://uhdmovies.ink/" target="_blank">🎥 4K Movies</a></div>
@@ -485,17 +487,10 @@
             <span class="icon">📦</span>
             <span>Packs</span>
         </a>
-        <div class="nav-item" onclick="toggleMenu()">
+        <div class="nav-item" onclick="toggleSidebar()">
             <span class="icon">🔗</span>
             <span>Links</span>
         </div>
-    </div>
-
-    <div class="sheet-overlay" onclick="toggleMenu()"></div>
-    <div class="bottom-sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-content tools-list" id="mobile-links">
-            </div>
     </div>
 
     <script>
@@ -503,20 +498,14 @@
             window.open(url, '_blank');
         }
 
-        // Toggle the Mobile Bottom Sheet Menu
-        function toggleMenu() {
-            const overlay = document.querySelector('.sheet-overlay');
-            const sheet = document.querySelector('.bottom-sheet');
+        // Toggle the Mobile Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
             
+            sidebar.classList.toggle('open');
             overlay.classList.toggle('open');
-            sheet.classList.toggle('open');
         }
-
-        // Clone desktop sidebar links into mobile bottom sheet to prevent repeating HTML
-        document.addEventListener("DOMContentLoaded", () => {
-            const desktopLinks = document.getElementById('desktop-links').innerHTML;
-            document.getElementById('mobile-links').innerHTML = desktopLinks;
-        });
 
         // Register Service Worker for PWA (Installable App)
         if ('serviceWorker' in navigator) {
