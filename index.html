@@ -11,16 +11,15 @@
     
     <title>Creator's Hub | Asset Library</title>
     <style>
-        /* Premium Font Pairing */
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
 
         :root {
             --text-primary: #ffffff;
-            --text-secondary: #94a3b8; /* Slightly cooler grey for premium feel */
+            --text-secondary: #94a3b8; 
             --bg-sidebar: rgba(10, 10, 12, 0.5);
             --card-bg: rgba(255, 255, 255, 0.03);
             --card-border: rgba(255, 255, 255, 0.06);
-            --accent-glow: rgba(139, 92, 246, 0.15); /* Purple/Blue accent */
+            --accent-glow: rgba(139, 92, 246, 0.15); 
         }
 
         * {
@@ -33,7 +32,7 @@
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif; /* Body font */
+            font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #050505;
             color: var(--text-primary);
             min-height: 100vh;
@@ -42,35 +41,45 @@
             overscroll-behavior-y: none; 
         }
 
-        h1, h2, h3, .brand, .nav-section {
-            font-family: 'Outfit', sans-serif; /* Heading font */
+        h1, h2, h3, .brand, .nav-section, .watermark {
+            font-family: 'Outfit', sans-serif; 
         }
 
-        /* Fixed Background Layer - Solves Mobile Image Issue */
+        /* Sleek Custom Scrollbar for PC */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
         .app-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background-image: 
-                /* Premium Designer Grid Overlay */
                 linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                /* Dark Vignette Overlay */
                 radial-gradient(circle at center, rgba(5,5,7,0.4) 0%, rgba(5,5,7,0.95) 100%),
-                /* The Image */
                 url('https://downloadscdn6.freepik.com/23/2149370/2149369692.jpg?filename=dystopian-landscape-with-futuristic-city-people.jpg&token=exp=1773751707~hmac=c9a5a2dc1bac1848d0d4455c976bbffa&filename=2149369692.jpg');
             background-size: 40px 40px, 40px 40px, cover, cover;
             background-position: center center;
             z-index: -2;
         }
 
-        /* Layout */
         .app-container {
             display: flex;
             width: 100%;
             height: 100vh;
         }
 
-        /* Desktop Sidebar Navigation */
+        /* --- Desktop Sidebar --- */
         .sidebar {
             width: 280px;
             height: 100vh;
@@ -99,6 +108,7 @@
             gap: 0.75rem;
             padding: 0 0.5rem;
             margin-bottom: 0.5rem;
+            flex-shrink: 0;
         }
 
         .brand-icon {
@@ -119,10 +129,10 @@
             flex-direction: column;
             gap: 0.35rem;
             overflow-y: auto;
-            padding-bottom: 2rem;
+            flex-grow: 1;
+            padding-bottom: 1rem;
             scrollbar-width: none; 
         }
-
         .tools-list::-webkit-scrollbar { display: none; }
 
         .nav-section {
@@ -135,7 +145,6 @@
             margin-bottom: 0.5rem;
             padding: 0 0.5rem;
         }
-
         .nav-section:first-child { margin-top: 0; }
 
         .tool a {
@@ -150,14 +159,30 @@
             border-radius: 10px;
             transition: all 0.2s ease;
         }
-
         .tool a:hover {
             background: rgba(255, 255, 255, 0.06);
             color: var(--text-primary);
             transform: translateX(4px);
         }
 
-        /* Main Workspace */
+        .sidebar-watermark {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .sidebar-watermark span, .footer-watermark span {
+            color: var(--text-primary);
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- Main Content Area --- */
         .main-content {
             margin-left: 280px;
             padding: 4rem 5rem;
@@ -166,17 +191,64 @@
             scroll-behavior: smooth;
         }
 
-        .header {
-            margin-bottom: 3.5rem;
-            max-width: 800px;
+        /* WRAPPER to stop weird stretching on Ultra-Wide PC monitors */
+        .content-wrapper {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Animated Premium Gradient Text */
+        /* Hero Image Banner - PC Optimized */
+        .hero-banner {
+            width: 100%;
+            min-height: 260px; /* Taller on PC */
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center; /* Centered nicely on Desktop */
+            padding: 3rem;
+        }
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to right, rgba(5,5,7,0.95) 0%, rgba(5,5,7,0.1) 100%); /* Left fade on PC */
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
         .header h1 {
-            font-size: 3rem;
+            font-size: 3.25rem;
             font-weight: 700;
             letter-spacing: -1.5px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             background: linear-gradient(to right, #ffffff, #94a3b8, #ffffff);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -184,9 +256,7 @@
             animation: shine 5s linear infinite;
         }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
+        @keyframes shine { to { background-position: 200% center; } }
 
         .header p {
             color: var(--text-secondary);
@@ -199,7 +269,7 @@
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin: 3rem 0 1.5rem 0;
+            margin: 2rem 0 1.5rem 0;
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -210,17 +280,20 @@
         /* Premium Studio Cards */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 4rem;
+        }
+
+        /* PACKS SECTION PC FIX - Expands the 3 packs to perfectly fill the space */
+        .packs-grid {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         }
 
         .card {
             padding: 1.75rem;
             border-radius: 20px;
             background: var(--card-bg);
-            /* Inner radial glow for depth */
-            background-image: radial-gradient(circle at top left, rgba(255,255,255,0.05) 0%, transparent 70%);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             cursor: pointer;
@@ -228,7 +301,7 @@
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             border: 1px solid var(--card-border);
-            border-top: 1px solid rgba(255, 255, 255, 0.15); /* Frosty top edge */
+            border-top: 1px solid rgba(255, 255, 255, 0.15); 
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
@@ -236,21 +309,49 @@
             user-select: none; 
         }
 
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
         .card-icon {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 0.75rem;
-            font-size: 18px;
+            font-size: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
         }
 
-        /* Smooth hover state */
+        .card-icon::after {
+            content: '';
+            position: absolute;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            background: var(--glow-color, rgba(255,255,255,0.2));
+            filter: blur(15px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .file-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
         .card:hover, .card:active {
             transform: translateY(-6px);
             background-color: rgba(255, 255, 255, 0.05);
@@ -272,25 +373,27 @@
             line-height: 1.6;
         }
 
-        /* =========================================================
-           MOBILE APP UI (Hidden on Desktop) 
-           ========================================================= */
-        .mobile-top-bar, .mobile-bottom-nav, .sidebar-overlay {
-            display: none;
+        .footer-watermark {
+            margin-top: 4rem; 
+            padding-bottom: 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
+        /* --- Mobile App UI --- */
+        .mobile-top-bar, .mobile-bottom-nav, .sidebar-overlay { display: none; }
+
         @media (max-width: 900px) {
-            .app-bg {
-                /* Reduce background size for mobile so grid looks right */
-                background-size: 25px 25px, 25px 25px, cover, cover;
-            }
+            .app-bg { background-size: 25px 25px, 25px 25px, cover, cover; }
 
             .sidebar { 
                 transform: translateX(-100%); 
-                background: rgba(10, 10, 12, 0.85); 
-                width: 260px;
+                background: rgba(10, 10, 12, 0.9); 
+                width: 270px;
             }
-
             .sidebar.open { transform: translateX(0); }
 
             .sidebar-overlay {
@@ -304,24 +407,30 @@
                 pointer-events: none;
                 transition: opacity 0.3s ease;
             }
-
-            .sidebar-overlay.open {
-                opacity: 1;
-                pointer-events: auto;
-            }
+            .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
             
             .app-container { flex-direction: column; }
             
             .main-content { 
                 margin-left: 0; 
-                padding: 6rem 1.25rem 7rem 1.25rem; 
+                padding: 6rem 1rem 7rem 1rem; 
             }
             
-            .header { margin-bottom: 2rem; }
-            .header h1 { font-size: 2.25rem; }
-            .section-heading { font-size: 1.35rem; margin-top: 2rem; }
+            /* Mobile tweaks for header */
+            .hero-banner { 
+                min-height: 200px; 
+                padding: 1.25rem; 
+                border-radius: 20px; 
+                align-items: flex-end; /* Text at bottom for mobile */
+            }
+            .hero-banner::before {
+                background: linear-gradient(to top, rgba(5,5,7,0.95) 0%, rgba(5,5,7,0.1) 100%); /* Bottom fade on Mobile */
+            }
+            .header { margin-bottom: 1.5rem; }
+            .header h1 { font-size: 2.2rem; }
+            .section-heading { font-size: 1.3rem; margin-top: 2rem; }
             
-            /* Native-style Top Bar */
+            /* Native Top Bar */
             .mobile-top-bar {
                 display: flex;
                 position: fixed;
@@ -333,27 +442,45 @@
                 border-bottom: 1px solid var(--card-border);
                 z-index: 40;
                 align-items: center;
-                justify-content: center;
-                padding-top: env(safe-area-inset-top);
+                justify-content: space-between;
+                padding: env(safe-area-inset-top) 1rem 0 1rem;
             }
 
             .menu-btn {
-                position: absolute;
-                left: 1rem;
+                display: flex; align-items: center; justify-content: center;
+                padding: 0.5rem; cursor: pointer; margin-left: -0.5rem;
+            }
+            .menu-btn svg { width: 28px; height: 28px; fill: var(--text-primary); }
+            
+            .user-avatar {
+                width: 32px; height: 32px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #8b5cf6, #ec4899);
+                border: 2px solid rgba(255,255,255,0.2);
+            }
+
+            /* Horizontal scroll for Packs on Mobile */
+            .packs-grid {
                 display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0.5rem;
-                cursor: pointer;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 1rem;
+                padding-bottom: 1.5rem;
+                margin-right: -1rem; 
+                padding-right: 1rem;
+                scrollbar-width: none;
+            }
+            .packs-grid::-webkit-scrollbar { display: none; }
+            
+            .packs-grid .card {
+                min-width: 260px;
+                scroll-snap-align: center;
+                flex-shrink: 0;
             }
 
-            .menu-btn svg {
-                width: 26px;
-                height: 26px;
-                fill: var(--text-primary);
-            }
+            .card-grid:not(.packs-grid) { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; }
 
-            /* Native-style Bottom Nav Bar */
+            /* Native Bottom Nav */
             .mobile-bottom-nav {
                 display: flex;
                 position: fixed;
@@ -370,21 +497,14 @@
             }
 
             .nav-item {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 5px;
-                color: var(--text-secondary);
-                text-decoration: none;
-                font-size: 0.7rem;
-                font-weight: 600;
-                cursor: pointer;
+                display: flex; flex-direction: column; align-items: center;
+                gap: 5px; color: var(--text-secondary); text-decoration: none;
+                font-size: 0.7rem; font-weight: 600; cursor: pointer;
             }
-            
             .nav-item .icon { font-size: 1.4rem; }
             .nav-item:active { transform: scale(0.92); color: var(--text-primary); }
             
-            .card-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; }
+            .footer-watermark { padding-bottom: 5rem; margin-top: 2rem; }
         }
     </style>
 </head>
@@ -395,13 +515,14 @@
     <div class="mobile-top-bar">
         <div class="menu-btn" onclick="toggleSidebar()">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
             </svg>
         </div>
-        <div class="brand">
+        <div class="brand" style="margin:0;">
             <div class="brand-icon">✨</div>
             Studio
         </div>
+        <div class="user-avatar"></div> 
     </div>
 
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
@@ -441,72 +562,128 @@
                 <div class="tool"><a href="https://share.google/5X5QVe6MblQ88pWtR" target="_blank">✂️ RemoveBG</a></div>
                 <div class="tool"><a href="https://www.downloadpirate.com/page/18/" target="_blank">🧩 Crack Plugins</a></div>
             </div>
+
+            <div class="watermark sidebar-watermark">
+                Made by <span>Nexcxre</span>
+            </div>
         </nav>
 
         <main class="main-content">
-            <div class="header">
-                <h1>Asset Library</h1>
-                <p>Curated overlays, premium effects, and cinematic transitions to elevate your next video project.</p>
-            </div>
+            <div class="content-wrapper">
+                
+                <div class="hero-banner">
+                    <div class="hero-content">
+                        <span class="status-badge">⚡ Updated Asset Hub</span>
+                        <div class="header" style="margin-bottom:0;">
+                            <h1>Creator Library</h1>
+                            <p>Curated overlays, premium effects, and cinematic transitions to elevate your projects.</p>
+                        </div>
+                    </div>
+                </div>
 
-            <h2 class="section-heading" id="assets-section">✨ Plugins & Overlays</h2>
-            <div class="card-grid">
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1zKy6Hpvb6AWlCQVPlJFwxNisoLg5UT9E')">
-                    <div class="card-icon">🧩</div>
-                    <h3>All Plugins</h3> <p>A complete collection of editing plugins</p>
+                <h2 class="section-heading" id="assets-section">✨ Essential Assets</h2>
+                <div class="card-grid">
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1zKy6Hpvb6AWlCQVPlJFwxNisoLg5UT9E')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #ec4899;">🧩</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>All Plugins</h3> <p>A complete collection of editing plugins</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1KtpF-Qd1Rz37W4GVmJn9V-VhlgI3k6DE?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #22c55e;">🌲</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>Environmental</h3> <p>Nature effects and atmosphere assets</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1_7CWm2886CbsSXOC4M98XZjtuDdtm9Aq?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #eab308;">✨</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>Extra Light Leaks</h3> <p>Cinematic light leak overlays</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1CkO5bJBxahiiZr0yXZG0fthPigrYz_A_?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #8b5cf6;">🎞️</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>Film Transitions</h3> <p>Retro and modern film transitions</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1thX3uIo-Li3ZyD3ne8pSoVPunL4WRjwx?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #3b82f6;">🖼️</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>PNG Overlays</h3> <p>Transparent editing assets and graphics</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1fGhMGXIS-uW12mQLbokYU0STLn24f8fa?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #ef4444;">⚡</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>Speed Light</h3> <p>Fast motion light effects and streaks</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F5LOS6r94UjpMM4SxMREkNQmuYgDxub8?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #14b8a6;">🔄</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>Smooth Transitions</h3> <p>Seamless cinematic cut transitions</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F2hTcqGDJkRpyCWpMzCxjasfIdP_FQkC?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #f97316;">🎯</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>Unique Effects</h3> <p>Creative and rare editing effects</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F6p3GR16SR8ohC38V4HG9-ksVTyKZotS?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #64748b;">📼</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>VHS & Retro</h3> <p>Analog distortions and glitch effects</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1FhZOI0vOjSLWAGZiJWfXGs_lBkLpjJbr?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #a855f7;">🔮</div>
+                            <span class="file-badge">DRIVE</span>
+                        </div>
+                        <h3>Vibe Overlays</h3> <p>Aesthetic mood and visual enhancements</p>
+                    </div>
                 </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1KtpF-Qd1Rz37W4GVmJn9V-VhlgI3k6DE?usp=drive_link')">
-                    <div class="card-icon">🌲</div>
-                    <h3>Environmental</h3> <p>Nature effects and atmosphere assets</p>
-                </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1_7CWm2886CbsSXOC4M98XZjtuDdtm9Aq?usp=drive_link')">
-                    <div class="card-icon">✨</div>
-                    <h3>Extra Light Leaks</h3> <p>Cinematic light leak overlays</p>
-                </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1CkO5bJBxahiiZr0yXZG0fthPigrYz_A_?usp=drive_link')">
-                    <div class="card-icon">🎞️</div>
-                    <h3>Film Transitions</h3> <p>Retro and modern film transitions</p>
-                </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1thX3uIo-Li3ZyD3ne8pSoVPunL4WRjwx?usp=drive_link')">
-                    <div class="card-icon">🖼️</div>
-                    <h3>PNG Overlays</h3> <p>Transparent editing assets and graphics</p>
-                </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1fGhMGXIS-uW12mQLbokYU0STLn24f8fa?usp=drive_link')">
-                    <div class="card-icon">⚡</div>
-                    <h3>Speed Light</h3> <p>Fast motion light effects and streaks</p>
-                </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F5LOS6r94UjpMM4SxMREkNQmuYgDxub8?usp=drive_link')">
-                    <div class="card-icon">🔄</div>
-                    <h3>Smooth Transitions</h3> <p>Seamless cinematic cut transitions</p>
-                </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F2hTcqGDJkRpyCWpMzCxjasfIdP_FQkC?usp=drive_link')">
-                    <div class="card-icon">🎯</div>
-                    <h3>Unique Effects</h3> <p>Creative and rare editing effects</p>
-                </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1F6p3GR16SR8ohC38V4HG9-ksVTyKZotS?usp=drive_link')">
-                    <div class="card-icon">📼</div>
-                    <h3>VHS & Retro</h3> <p>Analog distortions and glitch effects</p>
-                </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1FhZOI0vOjSLWAGZiJWfXGs_lBkLpjJbr?usp=drive_link')">
-                    <div class="card-icon">🔮</div>
-                    <h3>Vibe Overlays</h3> <p>Aesthetic mood and visual enhancements</p>
-                </div>
-            </div>
 
-            <h2 class="section-heading" id="packs-section">📦 Editing Packs</h2>
-            <div class="card-grid">
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1Biw6AhJUEer3kZ14E2X6eNseMEqxFytj')">
-                    <div class="card-icon">🎒</div>
-                    <h3>9headache Pack</h3> <p>Comprehensive editing resources and bundle</p>
+                <h2 class="section-heading" id="packs-section">📦 Editing Packs</h2>
+                <div class="card-grid packs-grid">
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1Biw6AhJUEer3kZ14E2X6eNseMEqxFytj')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #ef4444;">🎒</div>
+                            <span class="file-badge">FOLDER</span>
+                        </div>
+                        <h3>9headache Pack</h3> <p>Comprehensive editing resources and bundle</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/file/d/1H8KvMP9ajewl-x_kKxQ2e2W97QjRmNMr/view?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #3b82f6;">🪐</div>
+                            <span class="file-badge">ZIP</span>
+                        </div>
+                        <h3>Neptun's Pack 1-6</h3> <p>Complete collection of Neptun's assets</p>
+                    </div>
+                    <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1byxKUF18N3Uk_N9pCxiliK0tJ5qU_W36?usp=drive_link')">
+                        <div class="card-top">
+                            <div class="card-icon" style="--glow-color: #f59e0b;">🎓</div>
+                            <span class="file-badge">FOLDER</span>
+                        </div>
+                        <h3>Toziek Pack</h3> <p>Premium editing pack including tutorials</p>
+                    </div>
                 </div>
-                <div class="card" onclick="openLink('https://drive.google.com/file/d/1H8KvMP9ajewl-x_kKxQ2e2W97QjRmNMr/view?usp=drive_link')">
-                    <div class="card-icon">🪐</div>
-                    <h3>Neptun's Pack 1-6</h3> <p>Complete collection of Neptun's assets</p>
+
+                <div class="watermark footer-watermark">
+                    Designed & Built by <span>Nexcxre</span>
                 </div>
-                <div class="card" onclick="openLink('https://drive.google.com/drive/folders/1byxKUF18N3Uk_N9pCxiliK0tJ5qU_W36?usp=drive_link')">
-                    <div class="card-icon">🎓</div>
-                    <h3>Toziek Pack</h3> <p>Premium editing pack including tutorials</p>
-                </div>
+
             </div>
         </main>
     </div>
@@ -545,7 +722,7 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW setup skipped locally.'));
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW running locally'));
             });
         }
     </script>
