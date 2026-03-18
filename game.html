@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Asset Catcher | Overdrive</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            user-select: none; -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #050505; color: #ffffff;
+            overflow: hidden; touch-action: none; overscroll-behavior: none;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh;
+        }
+
+        /* Dynamic Premium Background */
+        .app-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at center, rgba(5,5,7,0.8) 0%, rgba(5,5,7,1) 100%);
+            background-size: 40px 40px, 40px 40px, cover;
+            z-index: -2;
+            transition: background 0.5s ease;
+        }
+
+        /* Overdrive Mode Background Pulse */
+        body.overdrive .app-bg {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at center, rgba(139, 92, 246, 0.2) 0%, rgba(5,5,7,0.95) 100%);
+            animation: pulseBg 1s infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.3); }
+        }
+
+        #game-board {
+            position: relative; width: 100%; max-width: 500px;
+            height: 100vh; overflow: hidden;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.05s;
+        }
+
+        .shake { animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shakeAnim {
+            10%, 90% { transform: translate3d(-2px, 0, 0) rotate(-1deg); }
+            20%, 80% { transform: translate3d(4px, 0, 0) rotate(1deg); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0) rotate(-2deg); }
+            40%, 60% { transform: translate3d(6px, 0, 0) rotate(2deg); }
+        }
+
+        /* --- Premium HUD --- */
+        .hud {
+            position: absolute; top: max(20px, env(safe-area-inset-top));
+            left: 20px; right: 20px; display: flex;
+            justify-content: space-between; align-items: flex-start; z-index: 10;
+        }
+
+        .stats-col { display: flex; flex-direction: column; gap: 10px; }
+
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 18px; border-radius: 20px;
+            font-family: 'Outfit', sans-serif; font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .score-val { font-size: 1.4rem; color: #fff; }
+        .score-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Combo Progress Bar */
+        .combo-container {
+            width: 130px; background: rgba(0,0,0,0.5);
+            border-radius: 10px; height: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden; position: relative;
+        }
+        .combo-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 10px; transition: width 0.2s ease-out;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+        body.overdrive .combo-fill { background: linear-gradient(90deg, #ec4899, #f59e0b); animation: overdriveFlow 1s linear infinite; }
+        @keyframes overdriveFlow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .lives-box { font-size: 1.1rem; letter-spacing: 2px; }
+
+        .exit-btn {
+            background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5; padding: 10px 18px; border-radius: 20px;
+            font-weight: 700; text-decoration: none; font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem; transition: transform 0.2s;
+        }
+        .exit-btn:active { transform: scale(0.9); }
+
+        /* --- Player (Folder) --- */
+        #player {
+            position: absolute; bottom: max(40px, env(safe-area-inset-bottom));
+            left: 50%; transform: translateX(-50%);
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3); border-top: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 22px; display: flex; justify-content: center; align-items: center;
+            font-size: 42px;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.4), 0 0 20px rgba(139, 92, 246, 0.2);
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+            z-index: 5; will-change: left;
+        }
+
+        #player.catch { transform: translateX(-50%) scale(1.15); box-shadow: 0 0 40px rgba(34, 197, 94, 0.6); border-color: #4ade80; }
+        #player.catch-rare { transform: translateX(-50%) scale(1.25); box-shadow: 0 0 50px rgba(245, 158, 11, 0.8); border-color: #fbbf24; }
+        #player.hit { transform: translateX(-50%) scale(0.85) rotate(-10deg); box-shadow: 0 0 50px rgba(239, 68, 68, 0.9); border-color: #ef4444; background: rgba(239, 68, 68, 0.2); }
+
+        /* Overdrive Player Glow */
+        body.overdrive #player { box-shadow: 0 15px 25px rgba(0,0,0,0.4), 0 0 40px #ec4899, inset 0 0 20px #8b5cf6; border-color: #f472b6; }
+
+        /* --- Falling Items --- */
+        .item {
+            position: absolute; width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 38px; z-index: 4; will-change: top, transform;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+        }
+
+        /* Make them tumble as they fall */
+        .tumble-right { animation: tumbleR 3s linear infinite; }
+        .tumble-left { animation: tumbleL 3s linear infinite; }
+        @keyframes tumbleR { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes tumbleL { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
+        /* --- Particles Engine --- */
+        .particle {
+            position: absolute; border-radius: 50%;
+            pointer-events: none; z-index: 6;
+            animation: popOut 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes popOut {
+            0% { transform: translate(0,0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* Floating +Points Text */
+        .floating-text {
+            position: absolute; font-family: 'Outfit', sans-serif;
+            font-weight: 800; font-size: 1.8rem; pointer-events: none; z-index: 6;
+            animation: floatUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-70px) scale(1); opacity: 0; }
+        }
+
+        /* --- UI Modals (Glassmorphism) --- */
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 5, 7, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 20; display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        
+        .modal-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.1); border-top: 1px solid rgba(255,255,255,0.2);
+            padding: 40px 30px; border-radius: 32px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 100%; max-width: 380px;
+        }
+
+        #game-over { display: none; }
+
+        .modal-card h1 {
+            font-size: 3rem; font-weight: 800; margin-bottom: 5px; letter-spacing: -1px;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .modal-card.crash h1 { background: linear-gradient(to right, #ef4444, #f87171); -webkit-background-clip: text; }
+        .modal-card p { color: #94a3b8; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.5; }
+
+        .action-btn {
+            background: linear-gradient(135deg, #ffffff, #e2e8f0); color: #000000;
+            border: none; padding: 18px 40px; border-radius: 20px;
+            font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.2rem;
+            cursor: pointer; box-shadow: 0 10px 20px rgba(255,255,255,0.15);
+            transition: transform 0.2s, box-shadow 0.2s; width: 100%;
+        }
+        .action-btn:active { transform: scale(0.95); box-shadow: 0 5px 10px rgba(255,255,255,0.1); }
+        .action-btn.danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 10px 20px rgba(239,68,68,0.3); }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-bg"></div>
+
+    <div id="game-board">
+        
+        <div class="hud">
+            <div class="stats-col">
+                <div class="glass-pill">
+                    <div class="score-label">SCORE</div>
+                    <div class="score-val" id="scoreVal">0</div>
+                </div>
+                <div class="combo-container">
+                    <div class="combo-fill" id="comboFill"></div>
+                </div>
+            </div>
+            <div class="stats-col" style="align-items: flex-end;">
+                <a href="index.html" class="exit-btn">Exit Hub</a>
+                <div class="glass-pill lives-box" id="livesVal">❤️❤️❤️</div>
+            </div>
+        </div>
+
+        <div id="player">📁</div>
+
+        <div class="modal-overlay" id="start-screen">
+            <div class="modal-card">
+                <h1>Creator Rush</h1>
+                <p>Drag the folder to catch assets.<br>Fill the bar for <strong>OVERDRIVE</strong>!<br>Avoid corrupt bugs (🐛, 🦠).</p>
+                <button class="action-btn" onclick="startGame()">Start Engine</button>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="game-over">
+            <div class="modal-card crash">
+                <h1>CRASHED</h1>
+                <p>Total Assets: <span id="finalScore" style="color:#fff; font-weight:800; font-size:1.4rem;">0</span><br>Your project file was corrupted.</p>
+                <button class="action-btn danger" onclick="resetGame()">Reboot System</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Game Engine Setup ---
+        const player = document.getElementById('player');
+        const gameBoard = document.getElementById('game-board');
+        const scoreElement = document.getElementById('scoreVal');
+        const comboFill = document.getElementById('comboFill');
+        const livesElement = document.getElementById('livesVal');
+        const gameOverScreen = document.getElementById('game-over');
+        const startScreen = document.getElementById('start-screen');
+        
+        let score = 0, combo = 0, lives = 3, isGameOver = true;
+        let baseSpeed = 4, spawnRate = 850; 
+        let itemInterval, animationFrame;
+        let items = [];
+        let isOverdrive = false;
+
+        // --- Asset Database ---
+        // type: normal, rare, bad, heal
+        const assetTypes = [
+            { symbol: '✨', type: 'normal', points: 1, color: '#fef08a' },
+            { symbol: '🎞️', type: 'normal', points: 1, color: '#a78bfa' },
+            { symbol: '🖼️', type: 'normal', points: 1, color: '#60a5fa' },
+            { symbol: '🧩', type: 'normal', points: 1, color: '#f472b6' },
+            { symbol: '💎', type: 'rare', points: 3, color: '#38bdf8' }, // Fast, high points
+            { symbol: '❤️', type: 'heal', points: 0, color: '#ef4444' }, // Rare heal
+            { symbol: '🐛', type: 'bad', points: 0, color: '#4ade80' },
+            { symbol: '🦠', type: 'bad', points: 0, color: '#84cc16' },
+            { symbol: '💣', type: 'bad', points: 0, color: '#000000' }
+        ];
+
+        // --- Haptics (Android Magic) ---
+        function vibrate(pattern) {
+            if (navigator.vibrate) navigator.vibrate(pattern);
+        }
+
+        // --- Mobile Drag Controls ---
+        let playerWidth = 80;
+        function movePlayerTo(clientX) {
+            if (isGameOver) return;
+            const boardRect = gameBoard.getBoundingClientRect();
+            let newX = clientX - boardRect.left;
+            if (newX < playerWidth / 2) newX = playerWidth / 2;
+            if (newX > boardRect.width - (playerWidth / 2)) newX = boardRect.width - (playerWidth / 2);
+            player.style.left = newX + 'px';
+        }
+
+        gameBoard.addEventListener('touchmove', (e) => {
+            e.preventDefault(); 
+            movePlayerTo(e.touches[0].clientX);
+        }, { passive: false });
+
+        gameBoard.addEventListener('mousemove', (e) => { movePlayerTo(e.clientX); });
+
+        // --- Visual Effects ---
+        function updateLives() {
+            let hearts = '';
+            for(let i=0; i<3; i++) { hearts += i < lives ? '❤️' : '🖤'; }
+            livesElement.innerText = hearts;
+        }
+
+        function createFloatingText(text, x, y, color) {
+            const floatEl = document.createElement('div');
+            floatEl.classList.add('floating-text');
+            floatEl.innerText = text;
+            floatEl.style.left = x + 'px'; floatEl.style.top = y + 'px';
+            if (color) floatEl.style.color = color;
+            gameBoard.appendChild(floatEl);
+            setTimeout(() => floatEl.remove(), 700); 
+        }
+
+        function createParticles(x, y, color) {
+            for(let i=0; i<8; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.backgroundColor = color;
+                
+                // Random size and spread
+                const size = Math.random() * 8 + 4;
+                p.style.width = size + 'px'; p.style.height = size + 'px';
+                p.style.left = (x + 20) + 'px'; p.style.top = (y + 20) + 'px';
+                
+                // Physics calculation for explosion
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 60 + 40;
+                p.style.setProperty('--tx', Math.cos(angle) * velocity + 'px');
+                p.style.setProperty('--ty', Math.sin(angle) * velocity + 'px');
+                
+                gameBoard.appendChild(p);
+                setTimeout(() => p.remove(), 600);
+            }
+        }
+
+        // --- Game Logic ---
+        function spawnItem() {
+            if (isGameOver) return;
+
+            const item = document.createElement('div');
+            item.classList.add('item');
+            
+            // Logic to pick item type based on probability
+            let rand = Math.random();
+            let chosenDef;
+            
+            const bugChance = Math.min(0.15 + (score * 0.003), 0.35); // Max 35% bugs
+            
+            if (rand < bugChance) {
+                // Spawn Bug
+                const bugs = assetTypes.filter(a => a.type === 'bad');
+                chosenDef = bugs[Math.floor(Math.random() * bugs.length)];
+            } else if (rand > 0.95 && lives < 3) {
+                // 5% chance for a heart, ONLY if damaged
+                chosenDef = assetTypes.find(a => a.type === 'heal');
+            } else if (rand > 0.85) {
+                // 10% chance for rare gem
+                chosenDef = assetTypes.find(a => a.type === 'rare');
+            } else {
+                // Normal item
+                const normals = assetTypes.filter(a => a.type === 'normal');
+                chosenDef = normals[Math.floor(Math.random() * normals.length)];
+            }
+
+            item.innerText = chosenDef.symbol;
+            
+            // Add tumbling animation randomly left or right
+            item.classList.add(Math.random() > 0.5 ? 'tumble-right' : 'tumble-left');
+            
+            // Speed modifiers
+            let speedMod = (Math.random() * 2) - 0.5;
+            if (chosenDef.type === 'rare') speedMod += 3; // Gems fall fast!
+            
+            const boardWidth = gameBoard.offsetWidth;
+            const randomX = Math.floor(Math.random() * (boardWidth - 60)) + 5; // Keep inside walls
+            
+            item.style.left = randomX + 'px'; item.style.top = '-60px';
+            gameBoard.appendChild(item);
+            
+            items.push({ 
+                el: item, y: -60, x: randomX,
+                type: chosenDef.type, points: chosenDef.points, 
+                color: chosenDef.color, speedMod: speedMod 
+            });
+
+            if (spawnRate > 350) spawnRate -= 3; 
+            clearInterval(itemInterval);
+            itemInterval = setInterval(spawnItem, spawnRate);
+        }
+
+        function updateGame() {
+            if (isGameOver) return;
+            const playerRect = player.getBoundingClientRect();
+            const boardTop = gameBoard.getBoundingClientRect().top;
+            const boardLeft = gameBoard.getBoundingClientRect().left;
+
+            for (let i = items.length - 1; i >= 0; i--) {
+                let itemObj = items[i];
+                // Overdrive makes everything fall faster
+                let currentSpeed = baseSpeed + itemObj.speedMod + (isOverdrive ? 3 : 0);
+                itemObj.y += currentSpeed;
+                itemObj.el.style.top = itemObj.y + 'px';
+
+                const itemRect = itemObj.el.getBoundingClientRect();
+                
+                // Forgiving Collision: Hitbox is smaller than the actual emoji visual
+                const hitPadding = itemObj.type === 'bad' ? 15 : 5; 
+
+                if (
+                    itemRect.bottom - hitPadding >= playerRect.top &&
+                    itemRect.top + hitPadding <= playerRect.bottom &&
+                    itemRect.right - hitPadding >= playerRect.left &&
+                    itemRect.left + hitPadding <= playerRect.right
+                ) {
+                    const catchX = itemRect.left - boardLeft;
+                    const catchY = playerRect.top - boardTop - 20;
+
+                    if (itemObj.type === 'bad') {
+                        // HIT A BUG
+                        lives--; combo = 0; updateLives();
+                        comboFill.style.width = '0%';
+                        isOverdrive = false; document.body.classList.remove('overdrive');
+                        
+                        vibrate([50, 50, 50]); // Aggressive buzz
+                        gameBoard.classList.add('shake');
+                        setTimeout(() => gameBoard.classList.remove('shake'), 400);
+                        
+                        player.classList.add('hit');
+                        setTimeout(() => player.classList.remove('hit'), 200);
+                        createFloatingText("ERROR!", catchX - 10, catchY, "#ef4444");
+
+                        if (lives <= 0) endGame();
+                    } 
+                    else if (itemObj.type === 'heal') {
+                        // CAUGHT A HEART
+                        lives = Math.min(3, lives + 1); updateLives();
+                        vibrate([30, 30]);
+                        player.classList.add('catch');
+                        setTimeout(() => player.classList.remove('catch'), 150);
+                        createFloatingText("+1 ❤️", catchX, catchY, "#ef4444");
+                        createParticles(catchX, catchY, itemObj.color);
+                    }
+                    else {
+                        // CAUGHT GOOD/RARE ASSET
+                        let earned = itemObj.points;
+                        if (isOverdrive) earned *= 2; // Double points in overdrive!
+                        
+                        score += earned; scoreElement.innerText = score;
+                        baseSpeed += 0.015; 
+                        
+                        // Manage Combo
+                        if (!isOverdrive) {
+                            combo += 10; // Fill 10% per catch
+                            if (combo >= 100) {
+                                combo = 100; isOverdrive = true;
+                                document.body.classList.add('overdrive');
+                                vibrate([100, 50, 100]); // Long buzz for overdrive
+                                createFloatingText("OVERDRIVE!", catchX - 30, catchY - 30, "#f59e0b");
+                            }
+                            comboFill.style.width = combo + '%';
+                        }
+
+                        // Visuals & Haptics
+                        if (itemObj.type === 'rare') {
+                            vibrate([20, 30, 20]);
+                            player.classList.add('catch-rare');
+                            setTimeout(() => player.classList.remove('catch-rare'), 150);
+                        } else {
+                            vibrate(15);
+                            player.classList.add('catch');
+                            setTimeout(() => player.classList.remove('catch'), 100);
+                        }
+
+                        createFloatingText(`+${earned}`, catchX, catchY, itemObj.color);
+                        createParticles(catchX, catchY, itemObj.color);
+                    }
+
+                    itemObj.el.remove();
+                    items.splice(i, 1);
+                } 
+                else if (itemObj.y > window.innerHeight) {
+                    // Item fell off screen
+                    if (itemObj.type !== 'bad' && itemObj.type !== 'heal') {
+                        // Drop combo if missed a good item
+                        if(!isOverdrive) {
+                            combo = Math.max(0, combo - 20);
+                            comboFill.style.width = combo + '%';
+                        }
+                    }
+                    itemObj.el.remove();
+                    items.splice(i, 1);
+                }
+            }
+
+            // Overdrive drain mechanics
+            if (isOverdrive) {
+                combo -= 0.15; // Slowly drains Overdrive bar
+                comboFill.style.width = combo + '%';
+                if (combo <= 0) {
+                    isOverdrive = false;
+                    document.body.classList.remove('overdrive');
+                }
+            }
+
+            animationFrame = requestAnimationFrame(updateGame);
+        }
+
+        function endGame() {
+            isGameOver = true;
+            cancelAnimationFrame(animationFrame); clearInterval(itemInterval);
+            document.getElementById('finalScore').innerText = score;
+            document.body.classList.remove('overdrive');
+            gameOverScreen.style.display = 'flex';
+        }
+
+        function startGame() { startScreen.style.display = 'none'; resetGame(); }
+
+        function resetGame() {
+            items.forEach(item => item.el.remove()); items = [];
+            score = 0; combo = 0; lives = 3; baseSpeed = 4; spawnRate = 850;
+            isGameOver = false; isOverdrive = false;
+            
+            scoreElement.innerText = score; comboFill.style.width = '0%'; updateLives();
+            document.body.classList.remove('overdrive');
+            player.style.left = '50%';
+            
+            gameOverScreen.style.display = 'none';
+            itemInterval = setInterval(spawnItem, spawnRate);
+            updateGame();
+        }
+    </script>
+</body>
+</html>
