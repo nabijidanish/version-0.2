@@ -3,7 +3,7 @@
   "short_name": "Studio Hub",
   "description": "Premium overlays, effects, and assets for your workflow.",
   "start_url": ".",
-  "display": "standalone",
+"display": "fullscreen",
   "background_color": "#050505",
   "theme_color": "#0a0a0c",
   "orientation": "portrait",
